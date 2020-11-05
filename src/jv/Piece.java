@@ -2,20 +2,22 @@ package jv;
 
 import java.util.ArrayList;
 
-public class Piece {
+class Piece {
     // "Chess set class"
 
-    final String VIDE = "."; // empty piece name (=empty square '.' in console)
+    private final String VIDE = "."; // empty piece name (=empty square '.' in console)
 
     // Name of the pieces
-    String[] nomPiece = {VIDE, "ROI", "DAME", "TOUR", "CAVALIER", "FOU", "PION"};
+    // ??  String[] nomPiece = {VIDE, "ROI", "DAME", "TOUR", "CAVALIER", "FOU", "PION"};
 
     // Give a score value for each piece : KING=0, QUEEN=9, ROOK=5...
-    int[] valeurPiece = {0, 0, 9, 5, 3, 3, 1};
-
+    // int[] valeurPiece = {0, 0, 9, 5, 3, 3, 1};
+    String nom;
+    String couleur;
+    int valeur;
     // For the pieces moves, using method "mail box" from Robert Hyatt
     // It helps to know if a piece is not moved outside the board !
-    int[] tab120 =
+    private int[] tab120 =
 
             {
                     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -31,7 +33,7 @@ public class Piece {
                     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
             };
-    int[] tab64 = {
+    private int[] tab64 = {
             21, 22, 23, 24, 25, 26, 27, 28,
             31, 32, 33, 34, 35, 36, 37, 38,
             41, 42, 43, 44, 45, 46, 47, 48,
@@ -41,19 +43,14 @@ public class Piece {
             81, 82, 83, 84, 85, 86, 87, 88,
             91, 92, 93, 94, 95, 96, 97, 98
     };
-
     // Moving vectors according to the 'tab64',
-    int[] deplacements_tour = {-10, 10, -1, 1};
-    int[] deplacements_fou = {-11, -9, 11, 9};
-    int[] deplacements_cavalier = {-12, -21, -19, -8, 12, 21, 19, 8};
-    int[] deplacements_roi_dame = {-10, 10, -1, 1, -11, -9, 11, 9};
+    private int[] deplacements_tour = {-10, 10, -1, 1};
     // KING and QUEEN = BISHOP + ROOK !
+    private int[] deplacements_fou = {-11, -9, 11, 9};
+    private int[] deplacements_cavalier = {-12, -21, -19, -8, 12, 21, 19, 8};
+    private int[] deplacements_roi_dame = {-10, 10, -1, 1, -11, -9, 11, 9};
 
-    String nom;
-    String couleur;
-    int valeur;
-
-    public Piece(String nomStr, String couleurStr) {
+    Piece(String nomStr, String couleurStr) {
 
 //       """Creating a piece object, with its attributes :
 //        - 'nom' as name (ROI, DAME...);
@@ -66,8 +63,6 @@ public class Piece {
         // int[] valeurPiece={0,0,9,5,3,3,1};
         switch (nomStr) {
             case VIDE:
-                valeur = 0;
-                break;
             case "ROI":
                 valeur = 0;
                 break;
@@ -78,8 +73,6 @@ public class Piece {
                 valeur = 5;
                 break;
             case "CAVALIER":
-                valeur = 3;
-                break;
             case "FOU":
                 valeur = 3;
                 break;
@@ -87,11 +80,11 @@ public class Piece {
                 valeur = 1;
                 break;
         }
-        ;
+
 
     }
 
-    public Piece() {
+    Piece() {
         nom = VIDE;
         couleur = "";
     }
@@ -110,7 +103,7 @@ public class Piece {
         for (int i : deplacements_roi_dame) {
             int n = tab120[tab64[pos1] + i];
             if (n != -1)
-                if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur == cAd)
+                if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur.equals(cAd))
                     liste.add(new Move(pos1, n, ""));
         }
         if (dontCallIsAttacked) return liste; // we just wanted moves that can attack
@@ -120,54 +113,54 @@ public class Piece {
 
 
         // Castle moves
-        if (c == "blanc") {
+        if (c.equals("blanc")) {
             if (echiquier.white_can_castle_63) {
 //                #If a rook is at square 63
 //                #And if squares between KING and ROOK are empty
 //                #And if squares on which KING walks are not attacked
 //                #And if KING is not in check
 //                #Then we can add this castle move
-                if (echiquier.cases[63].nom == "TOUR" &&
-                        echiquier.cases[63].couleur == "blanc" &&
+                if (echiquier.cases[63].nom.equals("TOUR") &&
+                        echiquier.cases[63].couleur.equals("blanc") &&
                         echiquier.cases[61].isEmpty() &&
                         echiquier.cases[62].isEmpty() &&
-                        echiquier.is_attacked(61, "noir") == false &&
-                        echiquier.is_attacked(62, "noir") == false &&
-                        echiquier.is_attacked(pos1, "noir") == false)
+                        !echiquier.is_attacked(61, "noir") &&
+                        !echiquier.is_attacked(62, "noir") &&
+                        !echiquier.is_attacked(pos1, "noir"))
                     liste.add(new Move(pos1, 62, ""));
             }
             if (echiquier.white_can_castle_56) {
                 // S'il y a une tour en 56, etc...
-                if (echiquier.cases[56].nom == "TOUR" &&
-                        echiquier.cases[56].couleur == "blanc" &&
+                if (echiquier.cases[56].nom.equals("TOUR") &&
+                        echiquier.cases[56].couleur.equals("blanc") &&
                         echiquier.cases[57].isEmpty() &&
                         echiquier.cases[58].isEmpty() &&
                         echiquier.cases[59].isEmpty() &&
-                        echiquier.is_attacked(58, cAd) == false &&
-                        echiquier.is_attacked(59, cAd) == false &&
-                        echiquier.is_attacked(pos1, cAd) == false)
+                        !echiquier.is_attacked(58, cAd) &&
+                        !echiquier.is_attacked(59, cAd) &&
+                        !echiquier.is_attacked(pos1, cAd))
                     liste.add(new Move(pos1, 58, ""));
             }
 
-        } else if (c == "noir") {
+        } else if (c.equals("noir")) {
             if (echiquier.black_can_castle_7) {
-                if (echiquier.cases[7].nom == "TOUR" &&
-                        echiquier.cases[7].couleur == "noir" &&
+                if (echiquier.cases[7].nom.equals("TOUR") &&
+                        echiquier.cases[7].couleur.equals("noir") &&
                         echiquier.cases[5].isEmpty() &&
                         echiquier.cases[6].isEmpty() &&
-                        echiquier.is_attacked(5, cAd) == false &&
-                        echiquier.is_attacked(6, cAd) == false &&
-                        echiquier.is_attacked(pos1, cAd) == false)
+                        !echiquier.is_attacked(5, cAd) &&
+                        !echiquier.is_attacked(6, cAd) &&
+                        !echiquier.is_attacked(pos1, cAd))
                     liste.add(new Move(pos1, 6, ""));
                 if (echiquier.black_can_castle_0) {
-                    if (echiquier.cases[0].nom == "TOUR" &&
-                            echiquier.cases[0].couleur == "noir" &&
+                    if (echiquier.cases[0].nom.equals("TOUR") &&
+                            echiquier.cases[0].couleur.equals("noir") &&
                             echiquier.cases[1].isEmpty() &&
                             echiquier.cases[2].isEmpty() &&
                             echiquier.cases[3].isEmpty() &&
-                            echiquier.is_attacked(2, cAd) == false &&
-                            echiquier.is_attacked(3, cAd) == false &&
-                            echiquier.is_attacked(pos1, cAd) == false)
+                            !echiquier.is_attacked(2, cAd) &&
+                            !echiquier.is_attacked(3, cAd) &&
+                            !echiquier.is_attacked(pos1, cAd))
                         liste.add(new Move(pos1, 2, ""));
                 }
             }
@@ -190,7 +183,7 @@ public class Piece {
             while (true) {
                 int n = tab120[tab64[pos1] + (k * j)];
                 if (n != -1) { // #as we are not out of the board
-                    if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur == cAd)
+                    if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur.equals(cAd))
                         liste.add(new Move(pos1, n, "")); // append the move if square is empty of opponent color
                 } else break; // stop if outside of the board
                 if (!echiquier.cases[n].isEmpty())
@@ -212,7 +205,7 @@ public class Piece {
         for (int i : deplacements_cavalier) {
             int n = tab120[tab64[pos1] + i];
             if (n != -1) {
-                if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur == cAd)
+                if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur.equals(cAd))
                     liste.add(new Move(pos1, n, ""));
             }
         }
@@ -232,7 +225,7 @@ public class Piece {
             while (true) {
                 int n = tab120[tab64[pos1] + (k * j)];
                 if (n != -1) { // as we are not out of the board
-                    if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur == cAd)
+                    if (echiquier.cases[n].isEmpty() || echiquier.cases[n].couleur.equals(cAd))
                         liste.add(new Move(pos1, n, "")); // append the move if square is empty of opponent color
                 } else break; // stop if outside of the board
                 if (!echiquier.cases[n].isEmpty())
@@ -253,7 +246,7 @@ public class Piece {
         ArrayList<Move> liste = new ArrayList<>();
 
         // White PAWN ---------------------------------------------------
-        if (couleur == "blanc") {
+        if (couleur.equals("blanc")) {
 
             // Upper square
             int n = tab120[tab64[pos1] - 10];
@@ -279,7 +272,7 @@ public class Piece {
             // Capture upper left
             n = tab120[tab64[pos1] - 11];
             if (n != -1) {
-                if (echiquier.cases[n].couleur == "noir" || echiquier.ep == n) {
+                if (echiquier.cases[n].couleur.equals("noir") || echiquier.ep == n) {
                     if (n < 8) { // Capture + promote
                         liste.add(new Move(pos1, n, "q"));
                         liste.add(new Move(pos1, n, "r"));
@@ -292,7 +285,7 @@ public class Piece {
             // Capture upper right
             n = tab120[tab64[pos1] - 9];
             if (n != -1) {
-                if (echiquier.cases[n].couleur == "noir" || echiquier.ep == n) {
+                if (echiquier.cases[n].couleur.equals("noir") || echiquier.ep == n) {
                     if (n < 8) {
                         liste.add(new Move(pos1, n, "q"));
                         liste.add(new Move(pos1, n, "r"));
@@ -330,7 +323,7 @@ public class Piece {
             // Capture bottom left
             n = tab120[tab64[pos1] + 9];
             if (n != -1) {
-                if (echiquier.cases[n].couleur == "blanc" || echiquier.ep == n) {
+                if (echiquier.cases[n].couleur.equals("blanc") || echiquier.ep == n) {
                     if (n > 55) {
                         liste.add(new Move(pos1, n, "q"));
                         liste.add(new Move(pos1, n, "r"));
@@ -343,7 +336,7 @@ public class Piece {
             // Capture bottom right
             n = tab120[tab64[pos1] + 11];
             if (n != -1) {
-                if (echiquier.cases[n].couleur == "blanc" || echiquier.ep == n) {
+                if (echiquier.cases[n].couleur.equals("blanc") || echiquier.ep == n) {
                     if (n > 55) {
                         liste.add(new Move(pos1, n, "q"));
                         liste.add(new Move(pos1, n, "r"));
@@ -358,11 +351,11 @@ public class Piece {
         return liste;
     }
 
-    boolean isEmpty() {
+    private boolean isEmpty() {
 //        """Returns TRUE or FALSE if this piece object is defined,
 //        As any square on board can have a piece on it, or not,
 //        we can set a null piece on a square."""
-        return nom == VIDE;
+        return nom.equals(VIDE);
     }
 
 

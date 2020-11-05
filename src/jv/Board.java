@@ -4,16 +4,18 @@ package jv;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Board {
+class Board {
 
-    public Piece[] cases;
-    public boolean white_can_castle_63;
-    public boolean white_can_castle_56;
-    public boolean black_can_castle_7;
-    public boolean black_can_castle_0;
-    public int ep;
-    ArrayList<MoveHistory> history;
-    String[] coord = {
+    Piece[] cases;
+    boolean white_can_castle_63;
+    boolean white_can_castle_56;
+    boolean black_can_castle_7;
+    boolean black_can_castle_0;
+    int ep;
+    String side2move;
+    int ply;
+    private ArrayList<MoveHistory> history;
+    private String[] coord = {
 
             "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8",
             "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7",
@@ -24,19 +26,8 @@ public class Board {
             "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2",
             "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
     };
-    String side2move;
-    int ply;
-    private Piece pieceDeplacee;
-    private Piece piecePrise;
-    private boolean isEp;
-    private int histEp;
-    private boolean hist_roque_63;
-    private boolean hist_roque_56;
-    private boolean hist_roque_0;
-    private boolean hist_roque_7;
-    private boolean flagViderEp;
 
-    public Board() {
+    Board() {
         //cases = new Piece[64];
         cases = new Piece[]{
                 new Piece("TOUR", "noir"),
@@ -70,16 +61,16 @@ public class Board {
         black_can_castle_7 = true;
     }
 
-    public String oppColor(String c) {
+    String oppColor(String c) {
         // "Returns the opposite color of the "c" color given"
 
-        if (c == "blanc")
+        if (c.equals("blanc"))
             return "noir";
         else
             return "blanc";
     }
 
-    public boolean is_attacked(int pos, String couleur) {
+    boolean is_attacked(int pos, String couleur) {
 //        """Returns TRUE or FALSE if the square number "pos" is a
 //        destination square for the color "couleur".
 //        If so we can say that "pos" is attacked by this side.
@@ -119,32 +110,32 @@ public class Board {
             if (!piece.couleur.equals(color))
                 continue;
 
-            if (piece.nom == "ROI") { //#KING
-                mList.addAll(piece.pos2_roi(pos1, oppColor(color), this, dontCallIsAttacked));
-                continue;
-            } else if (piece.nom == "DAME") {// QUEEN = ROOK + BISHOP moves !
-                mList.addAll(piece.pos2_tour(pos1, oppColor(color), this));
-                mList.addAll(piece.pos2_fou(pos1, oppColor(color), this));
-                continue;
-            } else if (piece.nom == "TOUR") { // ROOK
-                mList.addAll(piece.pos2_tour(pos1, oppColor(color), this));
-                continue;
-            } else if (piece.nom == "CAVALIER") { // KNIGHT
-                mList.addAll(piece.pos2_cavalier(pos1, oppColor(color), this));
-                continue;
-            } else if (piece.nom == "FOU") { // BISHOP
-                mList.addAll(piece.pos2_fou(pos1, oppColor(color), this));
-                continue;
+            switch (piece.nom) {
+                case "ROI":  //#KING
+                    mList.addAll(piece.pos2_roi(pos1, oppColor(color), this, dontCallIsAttacked));
+                    continue;
+                case "DAME": // QUEEN = ROOK + BISHOP moves !
+                    mList.addAll(piece.pos2_tour(pos1, oppColor(color), this));
+                    mList.addAll(piece.pos2_fou(pos1, oppColor(color), this));
+                    continue;
+                case "TOUR":  // ROOK
+                    mList.addAll(piece.pos2_tour(pos1, oppColor(color), this));
+                    continue;
+                case "CAVALIER":  // KNIGHT
+                    mList.addAll(piece.pos2_cavalier(pos1, oppColor(color), this));
+                    continue;
+                case "FOU":  // BISHOP
+                    mList.addAll(piece.pos2_fou(pos1, oppColor(color), this));
+                    continue;
             }
-            if (piece.nom == "PION") { // PAWN
+            if (piece.nom.equals("PION")) { // PAWN
                 mList.addAll(piece.pos2_pion(pos1, piece.couleur, this));
-                continue;
             }
         }
         return mList;
     }
 
-    public int ROW(int x) {
+    int ROW(int x) {
         return (x >> 3);
     }
 
@@ -175,15 +166,15 @@ public class Board {
 //        #    return
 
         // Informations to save in the history moves
-        pieceDeplacee = cases[depart]; // moved piece
-        piecePrise = cases[arrivee]; // taken piece, can be null : Piece()
-        isEp = false; // will be used to undo a ep move
-        histEp = ep; // saving the actual ep square (-1 or square number TO)
-        hist_roque_56 = white_can_castle_56;
-        hist_roque_63 = white_can_castle_63;
-        hist_roque_0 = black_can_castle_0;
-        hist_roque_7 = black_can_castle_7;
-        flagViderEp = true; // flag to erase ep or not : if the pawn moved is not taken directly, it can"t be taken later
+        Piece pieceDeplacee = cases[depart]; // moved piece
+        Piece piecePrise = cases[arrivee]; // taken piece, can be null : Piece()
+        boolean isEp = false; // will be used to undo a ep move
+        int histEp = ep; // saving the actual ep square (-1 or square number TO)
+        boolean hist_roque_56 = white_can_castle_56;
+        boolean hist_roque_63 = white_can_castle_63;
+        boolean hist_roque_0 = black_can_castle_0;
+        boolean hist_roque_7 = black_can_castle_7;
+        boolean flagViderEp = true; // flag to erase ep or not : if the pawn moved is not taken directly, it can"t be taken later
 
         // Moving piece
         cases[arrivee] = cases[depart];
@@ -192,94 +183,95 @@ public class Board {
         ply += 1;
 
         // a PAWN has been moved -------------------------------------
-        if (pieceDeplacee.nom.equals("PION")) {
+        //White PAWN
+        switch (pieceDeplacee.nom) {
+            case "PION":
+                if (pieceDeplacee.couleur.equals("blanc")) {
 
-            //White PAWN
-            if (pieceDeplacee.couleur.equals("blanc")) {
-
-                //If the move is "en passant"
-                if (ep == arrivee) {
-                    piecePrise = cases[arrivee + 8]; //take black pawn
-                    cases[arrivee + 8] = new Piece();
-                    isEp = true;
-                }
-                //The white pawn moves 2 squares from starting square
-                //then blacks can take "en passant" next move
-                else if (ROW(depart) == 6 && ROW(arrivee) == 4) {
-                    ep = arrivee + 8;
-                    flagViderEp = false;
-                }
-            }
-            //Black PAWN
-            else {
-
-                if (ep == arrivee) {
-                    piecePrise = cases[arrivee - 8];
-                    cases[arrivee - 8] = new Piece();
-                    isEp = true;
-                } else if (ROW(depart) == 1 && ROW(arrivee) == 3) {
-                    ep = arrivee - 8;
-                    flagViderEp = false;
-                }
-            }
-        }
-        // a ROOK has been moved--------------------------------------
-        // update castle rights
-
-        else if (pieceDeplacee.nom.equals("TOUR")) {
-
-            // White ROOK
-            if (pieceDeplacee.couleur.equals("blanc")) {
-                if (depart == 56)
-                    white_can_castle_56 = false;
-                else if (depart == 63)
-                    white_can_castle_63 = false;
-            }
-            // Black ROOK
-            else {
-                if (depart == 0)
-                    black_can_castle_0 = false;
-                else if (depart == 7)
-                    black_can_castle_7 = false;
-            }
-            // a KING has been moved-----------------------------------------
-        } else if (pieceDeplacee.nom.equals("ROI")) {
-
-            // White KING
-            if (pieceDeplacee.couleur.equals("blanc")) {
-
-                // moving from starting square
-                if (depart == 60) {
-                    // update castle rights
-                    white_can_castle_56 = false;
-                    white_can_castle_63 = false;
-
-                    // If castling, move the rook
-                    if (arrivee == 58) {
-                        cases[56] = new Piece();
-                        cases[59] = new Piece("TOUR", "blanc");
-                    } else if (arrivee == 62) {
-                        cases[63] = new Piece();
-                        cases[61] = new Piece("TOUR", "blanc");
+                    //If the move is "en passant"
+                    if (ep == arrivee) {
+                        piecePrise = cases[arrivee + 8]; //take black pawn
+                        cases[arrivee + 8] = new Piece();
+                        isEp = true;
+                    }
+                    //The white pawn moves 2 squares from starting square
+                    //then blacks can take "en passant" next move
+                    else if (ROW(depart) == 6 && ROW(arrivee) == 4) {
+                        ep = arrivee + 8;
+                        flagViderEp = false;
                     }
                 }
-            }
-            // Black KING
-            else {
+                //Black PAWN
+                else {
 
-                if (depart == 4) {
-                    black_can_castle_0 = false;
-                    black_can_castle_7 = false;
-
-                    if (arrivee == 6) {
-                        cases[7] = new Piece();
-                        cases[5] = new Piece("TOUR", "noir");
-                    } else if (arrivee == 2) {
-                        cases[0] = new Piece();
-                        cases[3] = new Piece("TOUR", "noir");
+                    if (ep == arrivee) {
+                        piecePrise = cases[arrivee - 8];
+                        cases[arrivee - 8] = new Piece();
+                        isEp = true;
+                    } else if (ROW(depart) == 1 && ROW(arrivee) == 3) {
+                        ep = arrivee - 8;
+                        flagViderEp = false;
                     }
                 }
-            }
+                break;
+            // a ROOK has been moved--------------------------------------
+            // update castle rights
+            case "TOUR":
+
+                // White ROOK
+                if (pieceDeplacee.couleur.equals("blanc")) {
+                    if (depart == 56)
+                        white_can_castle_56 = false;
+                    else if (depart == 63)
+                        white_can_castle_63 = false;
+                }
+                // Black ROOK
+                else {
+                    if (depart == 0)
+                        black_can_castle_0 = false;
+                    else if (depart == 7)
+                        black_can_castle_7 = false;
+                }
+                // a KING has been moved-----------------------------------------
+                break;
+            case "ROI":
+
+                // White KING
+                if (pieceDeplacee.couleur.equals("blanc")) {
+
+                    // moving from starting square
+                    if (depart == 60) {
+                        // update castle rights
+                        white_can_castle_56 = false;
+                        white_can_castle_63 = false;
+
+                        // If castling, move the rook
+                        if (arrivee == 58) {
+                            cases[56] = new Piece();
+                            cases[59] = new Piece("TOUR", "blanc");
+                        } else if (arrivee == 62) {
+                            cases[63] = new Piece();
+                            cases[61] = new Piece("TOUR", "blanc");
+                        }
+                    }
+                }
+                // Black KING
+                else {
+
+                    if (depart == 4) {
+                        black_can_castle_0 = false;
+                        black_can_castle_7 = false;
+
+                        if (arrivee == 6) {
+                            cases[7] = new Piece();
+                            cases[5] = new Piece("TOUR", "noir");
+                        } else if (arrivee == 2) {
+                            cases[0] = new Piece();
+                            cases[3] = new Piece("TOUR", "noir");
+                        }
+                    }
+                }
+                break;
         }
 
         // End pieces cases-----------------------------------------------
@@ -290,21 +282,27 @@ public class Board {
 
         // Promote : the pawn is changed to requested piece
         if (!promote.equals("")) {
-            if (promote.equals("q"))
-                cases[arrivee] = new Piece("DAME", side2move);
-            else if (promote.equals("r"))
-                cases[arrivee] = new Piece("TOUR", side2move);
-            else if (promote.equals("n"))
-                cases[arrivee] = new Piece("CAVALIER", side2move);
-            else if (promote.equals("b"))
-                cases[arrivee] = new Piece("FOU", side2move);
+            switch (promote) {
+                case "q":
+                    cases[arrivee] = new Piece("DAME", side2move);
+                    break;
+                case "r":
+                    cases[arrivee] = new Piece("TOUR", side2move);
+                    break;
+                case "n":
+                    cases[arrivee] = new Piece("CAVALIER", side2move);
+                    break;
+                case "b":
+                    cases[arrivee] = new Piece("FOU", side2move);
+                    break;
+            }
         }
         // Change side to move
         changeTrait();
 
         // Save move to the history list
 
-        history.add(new MoveHistory(depart, arrivee, pieceDeplacee, piecePrise, isEp, histEp, promote,
+        history.add(new MoveHistory(depart, arrivee, piecePrise, isEp, histEp, promote,
                 hist_roque_56, hist_roque_63, hist_roque_0, hist_roque_7));
 
         // If the move lets king in check, undo it and return false
@@ -316,7 +314,7 @@ public class Board {
 
     }
 
-    void changeTrait() {
+    private void changeTrait() {
 
         //  "Change the side to move"
 
@@ -334,7 +332,7 @@ public class Board {
         // sure, we can code better to avoid this and win kn/s...
         int pos = 0;// ??
         for (int i = 0; i < 64; i++) {
-            if (cases[i].nom.equals("ROI") && cases[i].couleur == couleur) {
+            if (cases[i].nom.equals("ROI") && cases[i].couleur.equals(couleur)) {
                 pos = i;
                 break;
             }
@@ -358,7 +356,9 @@ public class Board {
 
         int pos1 = lastmove.getDepart();
         int pos2 = lastmove.getArrivee();
-        Piece piece_deplacee = lastmove.getPieceDeplacee();
+
+        // ?? Piece piece_deplacee = lastmove.getPieceDeplacee();
+
         Piece piece_prise = lastmove.getPiecePrise();
         boolean isEp = lastmove.isEp();
         int ep = lastmove.getHistEp();
@@ -434,7 +434,7 @@ public class Board {
 
     }
 
-    public String caseInt2Str(int i) {
+    String caseInt2Str(int i) {
 //        """Given in argument : an integer between 0 and 63
 //        Returns a string like "e2""""
 
@@ -453,7 +453,7 @@ public class Board {
         return coord[i];
     }
 
-    public int caseStr2Int(String c) {
+    int caseStr2Int(String c) {
 //        """'c' given in argument is a square name like 'e2'
 //        "This functino returns a square number like 52"""
 
@@ -476,8 +476,7 @@ public class Board {
             System.out.print(err[1]);
             return -1;
         }
-        int ret = Arrays.asList(coord).indexOf(c);
-        return ret;
+        return Arrays.asList(coord).indexOf(c);
 
     }
 
@@ -514,7 +513,7 @@ public class Board {
         showHistory();
     }
 
-    void showHistory() {
+    private void showHistory() {
 
         // "Displays the history of the moves played"
 
@@ -535,8 +534,8 @@ public class Board {
 //    roque0, \
 //    roque7) in self.history:
         String a, b;
-        double cpt = 0.0;
-        boolean aff = false;
+        // ??  double cpt = 0.0;
+        // ??  boolean aff = false;
         for (MoveHistory h : history) {
             final int depart = h.getDepart();
             a = caseInt2Str(depart);

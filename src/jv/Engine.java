@@ -2,17 +2,17 @@ package jv;
 
 import java.util.ArrayList;
 
-public class Engine {
+class Engine {
 
-    int[] pv_length;
-    Move[][] pv;
-    int nodes;
-    int MAX_PLY;
-    int INFINITY;
-    int init_depth;
-    boolean endgame;
+    private int[] pv_length;
+    private Move[][] pv;
+    private int nodes;
+    private int MAX_PLY;
+    private int INFINITY;
+    private int init_depth;
+    private boolean endgame;
 
-    public Engine() {
+    Engine() {
         endgame = false;
         init_depth = 4; // search in fixed depth
         nodes = 0; // number of nodes
@@ -76,15 +76,14 @@ public class Engine {
         // print('Done in', timeDiff, 's')
     }
 
-    int perftoption(int prof, int limit, Board b) {
+    private int perftoption(int prof, int limit, Board b) {
         int cpt = 0;
 
         if (prof > limit) return 0;
 
-        ArrayList<Move> l = b.gen_moves_list("", false);
+        ArrayList<Move> L = b.gen_moves_list("", false);
 
-        for (int i = 0; i < l.size(); i++) {
-            Move m = l.get(i);
+        for (Move m : L) {
             if (!b.domove(m.pos1, m.pos2, m.s))
                 continue;
 
@@ -98,14 +97,14 @@ public class Engine {
         return cpt;
     }
 
-    public void undomove(Board b) {
+    void undomove(Board b) {
         // "The user requested a 'undomove' in command line"
 
         b.undomove();
         endgame = false;
     }
 
-    public void usermove(Board b, String c) {
+    void usermove(Board b, String c) {
 //
 //        """Move a piece for the side to move, asked in command line.
 //        The command 'c' in argument is like 'e2e4' or 'b7b8q'.
@@ -131,14 +130,20 @@ public class Engine {
         String promote = "";
         if (c.length() > 4) {
             promote = Character.toString(c.charAt(4));
-            if (promote.equals("q"))
-                promote = "q";
-            else if (promote.equals("r"))
-                promote = "r";
-            else if (promote.equals("n"))
-                promote = "n";
-            else if (promote.equals("b"))
-                promote = "b";
+            switch (promote) {
+                case "q":
+                    promote = "q";
+                    break;
+                case "r":
+                    promote = "r";
+                    break;
+                case "n":
+                    promote = "n";
+                    break;
+                case "b":
+                    promote = "b";
+                    break;
+            }
         }
         // Generate moves list to check
         // if the given move (pos1,pos2,promote) is correct
@@ -255,7 +260,7 @@ public class Engine {
 //    }
 
 
-    void clear_pv() {
+    private void clear_pv() {
 
         //    "Clear the triangular PV table containing best moves lines"
         // pv = [[0 for x in range(self.MAX_PLY)] for x in range(self.MAX_PLY)]
@@ -266,7 +271,7 @@ public class Engine {
     }
 
 
-    void search(Board b) {
+    private void search(Board b) {
 
 //        """Search the best move for the side to move,
 //        according to the given chessboard 'b'
@@ -314,7 +319,7 @@ public class Engine {
         print_result(b);
     }
 
-    double alphabeta(int depth, double alpha, double beta, Board b) {
+    private double alphabeta(int depth, double alpha, double beta, Board b) {
 
         // We arrived at the end of the search : return the board score
         if (depth == 0)
@@ -343,12 +348,11 @@ public class Engine {
 
         boolean f = false;  // flag to know if at least one move will be done
         //for i, m in enumerate(mList)
-        for (int i = 0; i < mList.size(); i++) {
+        for (Move m : mList) {
             //Do the move 'm'.
             // If it lets king in check, undo it and ignore it
             // remind : a move is defined with (pos1,pos2,promote)
             // i.e. : 'e7e8q' is (12,4,'q')
-            Move m = mList.get(i);
             if (!b.domove(m.pos1, m.pos2, m.s))
                 continue;
 

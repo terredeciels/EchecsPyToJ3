@@ -41,8 +41,8 @@ public class Main {
             if (c.equals("quit") || c.equals("exit"))
                 System.exit(0);
 
-//            else if (c.equals("undomove"))
-//                e.undomove(b);
+            else if (c.equals("undomove"))
+                e.undomove(b);
 
 //            else if ("setboard".contains(c))
 //                e.setboard(b, c);
@@ -62,12 +62,14 @@ public class Main {
 //            else if ("sd ".contains(c))
 //                e.setDepth(c);
 
-//            else if ("perft ".contains(c))
-//                // e.perft(c, b);
-//                e.perft(3, b);
+            else if ("perft ".contains(c)) {
+                int depth = 4;
+                e.perft(depth, b);
+            }
+            // e.perft(3, b);
 
-//            else if (c.equals("legalmoves"))
-//                e.legalmoves(b);
+            else if (c.equals("legalmoves"))
+                e.legalmoves(b);
 
             else
                 // coup à jouer ? ex : e2e4

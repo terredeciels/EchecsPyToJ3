@@ -1,8 +1,7 @@
 package jv;
 
-public class MoveHistory {
+class MoveHistory {
     private final int depart;
-    private final Piece pieceDeplacee;
     private final int arrivee;
     private final String promote;
     private final int histEp;
@@ -12,13 +11,14 @@ public class MoveHistory {
     private final boolean isEp;
     private final boolean hist_roque_0;
     private final boolean hist_roque_7;
+    // ?? private final Piece pieceDeplacee;
 
-    public MoveHistory(int depart, int arrivee, Piece pieceDeplacee, Piece piecePrise,
-                       boolean isEp, int histEp, String promote,
-                       boolean hist_roque_56, boolean hist_roque_63, boolean hist_roque_0, boolean hist_roque_7) {
+    MoveHistory(int depart, int arrivee, Piece piecePrise,
+                boolean isEp, int histEp, String promote,
+                boolean hist_roque_56, boolean hist_roque_63, boolean hist_roque_0, boolean hist_roque_7) {
         this.depart = depart;
         this.arrivee = arrivee;
-        this.pieceDeplacee = pieceDeplacee;
+        // ?? this.pieceDeplacee = pieceDeplacee;
         this.piecePrise = piecePrise;
         this.isEp = isEp;
         this.histEp = histEp;
@@ -29,47 +29,44 @@ public class MoveHistory {
         this.hist_roque_7 = hist_roque_7;
     }
 
-    public int getDepart() {
+    int getDepart() {
         return depart;
     }
 
-    public Piece getPieceDeplacee() {
-        return pieceDeplacee;
-    }
 
-    public int getArrivee() {
+    int getArrivee() {
         return arrivee;
     }
 
-    public String getPromote() {
+    String getPromote() {
         return promote;
     }
 
-    public int getHistEp() {
+    int getHistEp() {
         return histEp;
     }
 
-    public Piece getPiecePrise() {
+    Piece getPiecePrise() {
         return piecePrise;
     }
 
-    public boolean isHist_roque_56() {
+    boolean isHist_roque_56() {
         return hist_roque_56;
     }
 
-    public boolean isHist_roque_63() {
+    boolean isHist_roque_63() {
         return hist_roque_63;
     }
 
-    public boolean isEp() {
+    boolean isEp() {
         return isEp;
     }
 
-    public boolean isHist_roque_0() {
+    boolean isHist_roque_0() {
         return hist_roque_0;
     }
 
-    public boolean isHist_roque_7() {
+    boolean isHist_roque_7() {
         return hist_roque_7;
     }
 }
