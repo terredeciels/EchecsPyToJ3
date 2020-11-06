@@ -104,74 +104,148 @@ class Engine {
         endgame = false;
     }
 
-    void usermove(Board b, String c) {
+    void usermove(Board b, String c, String depart, String arrivee, boolean gui) {
+        if (!gui) {
 //
 //        """Move a piece for the side to move, asked in command line.
 //        The command 'c' in argument is like 'e2e4' or 'b7b8q'.
 //        Argument 'b' is the chessboard.
 //        """
 
-        if (endgame) {
+            if (endgame) {
+                print_result(b);
+                return;
+            }
+
+            // Testing the command 'c'. Exit if incorrect.
+            String chk = chkCmd(c);
+            if (!chk.equals("")) {
+                System.out.print(chk);
+                return;
+            }
+            // Convert cases names to int, ex : e3 -> 44
+            int pos1 = b.caseStr2Int(c.charAt(0) + Character.toString(c.charAt(1)));
+            int pos2 = b.caseStr2Int(c.charAt(2) + Character.toString(c.charAt(3)));
+
+            // Promotion asked ?
+            String promote = "";
+            if (c.length() > 4) {
+                promote = Character.toString(c.charAt(4));
+                switch (promote) {
+                    case "q":
+                        promote = "q";
+                        break;
+                    case "r":
+                        promote = "r";
+                        break;
+                    case "n":
+                        promote = "n";
+                        break;
+                    case "b":
+                        promote = "b";
+                        break;
+                }
+            }
+            // Generate moves list to check
+            // if the given move (pos1,pos2,promote) is correct
+            ArrayList<Move> mList = b.gen_moves_list("", false);
+
+            // The move is not in list ? or let the king in check ?
+            Move m = new Move(pos1, pos2, promote);
+            //boolean b1 = !mList.contains(m);
+            boolean b1 = false;
+            for (Move mv : mList) {
+                if (mv.pos1 == m.pos1 && mv.pos2 == m.pos2 && mv.s.equals(m.s)) {
+                    b1 = true;
+                    break;
+                }
+            }
+            boolean b2 = !b.domove(pos1, pos2, promote);
+            if (!b1 || b2) {
+                System.out.print("\n" + c + " : incorrect move or let king in check" + "\n");
+                return;
+            }
+            // Display the chess board
+            b.render();
+
+            // Check if game is over
             print_result(b);
-            return;
-        }
 
-        // Testing the command 'c'. Exit if incorrect.
-        String chk = chkCmd(c);
-        if (!chk.equals("")) {
-            System.out.print(chk);
-            return;
+            // Let the engine play
+            search(b);
         }
-        // Convert cases names to int, ex : e3 -> 44
-        int pos1 = b.caseStr2Int(c.charAt(0) + Character.toString(c.charAt(1)));
-        int pos2 = b.caseStr2Int(c.charAt(2) + Character.toString(c.charAt(3)));
-
-        // Promotion asked ?
-        String promote = "";
-        if (c.length() > 4) {
-            promote = Character.toString(c.charAt(4));
-            switch (promote) {
-                case "q":
-                    promote = "q";
-                    break;
-                case "r":
-                    promote = "r";
-                    break;
-                case "n":
-                    promote = "n";
-                    break;
-                case "b":
-                    promote = "b";
-                    break;
+        else{
+            System.out.println(depart+","+arrivee);
+            int pos1 = Integer.parseInt(depart);
+            int pos2 = Integer.parseInt(arrivee);
+            if (endgame) {
+                print_result(b);
+                return;
             }
-        }
-        // Generate moves list to check
-        // if the given move (pos1,pos2,promote) is correct
-        ArrayList<Move> mList = b.gen_moves_list("", false);
 
-        // The move is not in list ? or let the king in check ?
-        Move m = new Move(pos1, pos2, promote);
-        //boolean b1 = !mList.contains(m);
-        boolean b1 = false;
-        for (Move mv : mList) {
-            if (mv.pos1 == m.pos1 && mv.pos2 == m.pos2 && mv.s.equals(m.s)) {
-                b1 = true;
-                break;
+            // Testing the command 'c'. Exit if incorrect.
+//            String chk = chkCmd(c);
+//            if (!chk.equals("")) {
+//                System.out.print(chk);
+//                return;
+//            }
+            // Convert cases names to int, ex : e3 -> 44
+//            int pos1 = b.caseStr2Int(c.charAt(0) + Character.toString(c.charAt(1)));
+//            int pos2 = b.caseStr2Int(c.charAt(2) + Character.toString(c.charAt(3)));
+
+            // Promotion asked ?
+            //TODO promote gui
+//            String promote = "";
+//            if (c.length() > 4) {
+//                promote = Character.toString(c.charAt(4));
+//                switch (promote) {
+//                    case "q":
+//                        promote = "q";
+//                        break;
+//                    case "r":
+//                        promote = "r";
+//                        break;
+//                    case "n":
+//                        promote = "n";
+//                        break;
+//                    case "b":
+//                        promote = "b";
+//                        break;
+//                }
+//            }
+            // Generate moves list to check
+            // if the given move (pos1,pos2,promote) is correct
+            ArrayList<Move> mList = b.gen_moves_list("", false);
+
+            // The move is not in list ? or let the king in check ?
+            //TODO promote gui
+           // Move m = new Move(pos1, pos2, promote);
+            Move m = new Move(pos1, pos2, "");
+            //boolean b1 = !mList.contains(m);
+            boolean b1 = false;
+            for (Move mv : mList) {
+                if (mv.pos1 == m.pos1 && mv.pos2 == m.pos2 && mv.s.equals(m.s)) {
+                    b1 = true;
+                    break;
+                }
             }
-        }
-        boolean b2 = !b.domove(pos1, pos2, promote);
-        if (!b1 || b2) {
-            System.out.print("\n" + c + " : incorrect move or let king in check" + "\n");
-            return;
-        }
-        // Display the chess board
-        b.render();
+            //TODO promote gui
+            //boolean b2 = !b.domove(pos1, pos2, promote);
+            boolean b2 = !b.domove(pos1, pos2, "");
+            if (!b1 || b2) {
+               // System.out.print("\n" + c + " : incorrect move or let king in check" + "\n");
+                System.out.println("incorrect move or let king in check");
+                return;
+            }
+            // Display the chess board
+            b.render();
 
-        // Check if game is over
-        print_result(b);
+            // Check if game is over
+            print_result(b);
 
-        // Let the engine play
-        search(b);
+            // Let the engine play
+            search(b);
+        }
     }
 
     private void print_result(Board b) {
