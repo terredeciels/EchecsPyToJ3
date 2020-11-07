@@ -73,7 +73,7 @@ public class Main {
 
             else
                 // coup à jouer ? ex : e2e4
-                e.usermove(b, c,"", "", false);
+                e.usermove(b, c, "", "");
         }
     }
 
