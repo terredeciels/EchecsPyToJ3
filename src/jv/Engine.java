@@ -2,18 +2,18 @@ package jv;
 
 import java.util.ArrayList;
 
-class Engine {
+public class Engine {
 
     public static double INFINITY = 32000;
 
     public int nodes;
     public int init_depth;
-    Move[][] pv;
-    boolean endgame;
+    public Move[][] pv;
+    public boolean endgame;
     private int[] pv_length;
     private int MAX_PLY;
 
-    Engine() {
+    public Engine() {
         endgame = false;
         init_depth = 4; // search in fixed depth
         nodes = 0; // number of nodes
@@ -27,7 +27,7 @@ class Engine {
 
     }
 
-    void legalmoves(Board b) {
+    public void legalmoves(Board b) {
 
         //  "Show legal moves for side to move"
 
@@ -42,7 +42,7 @@ class Engine {
         }
     }
 
-    void perft(int depth, Board b) {
+    public void perft(int depth, Board b) {
 
 //        """PERFformance Test :
 //        This is a debugging function through the move generation tree
@@ -98,14 +98,14 @@ class Engine {
         return cpt;
     }
 
-    void undomove(Board b) {
+    public void undomove(Board b) {
         // "The user requested a 'undomove' in command line"
 
         b.undomove();
         endgame = false;
     }
 
-    void usermove(Board b, String c, String depart, String arrivee) {
+    public void usermove(Board b, String c, String depart, String arrivee) {
 
 //
 //        """Move a piece for the side to move, asked in command line.
@@ -177,7 +177,7 @@ class Engine {
 
     }
 
-    void print_result(Board b) {
+    public void print_result(Board b) {
 
         //  "Check if the game is over and print the result"
 
@@ -263,7 +263,7 @@ class Engine {
 //    }
 
 
-    void clear_pv() {
+    public void clear_pv() {
 
         //    "Clear the triangular PV table containing best moves lines"
         // pv = [[0 for x in range(self.MAX_PLY)] for x in range(self.MAX_PLY)]
@@ -322,7 +322,7 @@ class Engine {
         print_result(b);
     }
 
-    double alphabeta(int depth, double alpha, double beta, Board b) {
+    public double alphabeta(int depth, double alpha, double beta, Board b) {
 
         // We arrived at the end of the search : return the board score
         if (depth == 0)

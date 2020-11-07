@@ -4,7 +4,7 @@ package jv;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-class Board {
+public class Board {
 
     Piece[] cases;
     boolean white_can_castle_63;
@@ -13,7 +13,7 @@ class Board {
     boolean black_can_castle_0;
     int ep;
     String side2move;
-    int ply;
+    public int ply;
     private ArrayList<MoveHistory> history;
     private String[] coord = {
 
@@ -27,7 +27,7 @@ class Board {
             "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
     };
 
-    Board() {
+    public Board() {
         //cases = new Piece[64];
         cases = new Piece[]{
                 new Piece("TOUR", "noir"),
@@ -85,7 +85,7 @@ class Board {
         return false;
     }
 
-    ArrayList<Move> gen_moves_list(String color, boolean dontCallIsAttacked) {
+    public ArrayList<Move> gen_moves_list(String color, boolean dontCallIsAttacked) {
 
 //        """Returns all possible moves for the requested color.
 //        If color is not given, it is considered as the side to move.
@@ -139,7 +139,7 @@ class Board {
         return (x >> 3);
     }
 
-    boolean domove(int depart, int arrivee, String promote) {
+    public boolean domove(int depart, int arrivee, String promote) {
 
 //        """Move a piece on the board from the square numbers
 //        "depart" to "arrivee" (0..63) respecting rules :
@@ -434,7 +434,7 @@ class Board {
 
     }
 
-    String caseInt2Str(int i) {
+    public String caseInt2Str(int i) {
 //        """Given in argument : an integer between 0 and 63
 //        Returns a string like "e2""""
 
@@ -508,7 +508,7 @@ class Board {
 
     }
 
-    void render() {
+    public void render() {
         // System.out.println("Side to move : " + side2move);
         showHistory();
     }

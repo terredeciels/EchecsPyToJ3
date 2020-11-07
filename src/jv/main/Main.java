@@ -1,9 +1,12 @@
-package jv;
+package jv.main;
 /*
 
 Version python to java OK_v1
 
  */
+
+import jv.Board;
+import jv.Engine;
 
 import java.util.Scanner;
 

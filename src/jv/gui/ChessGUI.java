@@ -1,16 +1,21 @@
-package jv;
+package jv.gui;
+
+
+
+import jv.Board;
+import jv.Engine;
+import jv.Move;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
+
 
 public class ChessGUI implements ActionListener {
 
@@ -24,8 +29,6 @@ public class ChessGUI implements ActionListener {
     private Engine engine;
     private JButton[][] chessBoardSquares = new JButton[8][8];
     private Image[][] chessPieceImages = new Image[2][6];
-    private String depart;
-    private String arrivee;
     private boolean first = true;
     private JButton depButton;
     private JButton arrButton;
@@ -41,7 +44,7 @@ public class ChessGUI implements ActionListener {
         Runnable r = () -> {
             ChessGUI cg = new ChessGUI();
 
-            JFrame f = new JFrame("ChessChamp");
+            JFrame f = new JFrame("");
             f.add(cg.getGui());
             // Ensures JVM closes after frame(s) closed and
             // all non-daemon threads are finished
@@ -53,6 +56,7 @@ public class ChessGUI implements ActionListener {
             // in order display the components within it
             f.pack();
             // ensures the minimum size is enforced.
+           // f.setSize(600,600);
             f.setMinimumSize(f.getSize());
             f.setVisible(true);
         };
@@ -121,15 +125,15 @@ public class ChessGUI implements ActionListener {
                 return new Dimension(s, s);
             }
         };
-        chessBoard.setBorder(new CompoundBorder(
-                new EmptyBorder(8, 8, 8, 8),
-                new LineBorder(Color.BLACK)
-        ));
-        // Set the BG to be ochre
-        Color ochre = new Color(204, 119, 34);
-        chessBoard.setBackground(ochre);
+//        chessBoard.setBorder(new CompoundBorder(
+//                new EmptyBorder(8, 8, 8, 8),
+//                new LineBorder(Color.BLACK)
+//        ));
+//        // Set the BG to be ochre
+//        Color ochre = new Color(204, 119, 34);
+//        chessBoard.setBackground(ochre);
         JPanel boardConstrain = new JPanel(new GridBagLayout());
-        boardConstrain.setBackground(ochre);
+//        boardConstrain.setBackground(ochre);
         boardConstrain.add(chessBoard);
         gui.add(boardConstrain);
 
@@ -249,8 +253,8 @@ public class ChessGUI implements ActionListener {
     }
 
     private void usermove() {
-        depart = depButton.getText();
-        arrivee = arrButton.getText();
+        String depart = depButton.getText();
+        String arrivee = arrButton.getText();
         System.out.println(depart + "," + arrivee);
         int pos1 = Integer.parseInt(depart);
         int pos2 = Integer.parseInt(arrivee);
@@ -366,12 +370,14 @@ public class ChessGUI implements ActionListener {
         }
         // root best move found, do it, and print result
         Move best = engine.pv[0][0];
+
+        domove();
         board.domove(best.pos1, best.pos2, best.s);
-        domove(depButton, arrButton, best.s);
+
         engine.print_result(board);
     }
 
-    private void domove(JButton pos1, JButton pos2, String s) {
+    private void domove() {
 
 //        """Move a piece on the board from the square numbers
 //        "depart" to "arrivee" (0..63) respecting rules :
@@ -422,7 +428,7 @@ public class ChessGUI implements ActionListener {
         // a PAWN has been moved -------------------------------------
         //White PAWN
 
-        //TODO ep et promote
+        //TODO pion et ep et promote
 
 //        switch (pieceDeplacee.nom) {
 //            case "PION":
@@ -522,7 +528,7 @@ public class ChessGUI implements ActionListener {
 
         // Promote : the pawn is changed to requested piece
 
-        //TODO ep et promote
+        //TODO pion et ep et promote
 
 //        if (!promote.equals("")) {
 //            switch (promote) {
